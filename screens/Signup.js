@@ -135,15 +135,21 @@ const Signup = ({ navigation }) => {
           )}
 
           <Formik
-            initialValues={{ name: '', email: '', dateOfBirth: '', password: '', confirmPassword: '' }}
+            
+            initialValues={{ 
+              fullname: '', email: '', identification: '',
+              password: '', confirmPassword: '', phone:'',
+              role:'u' 
+            }}
             onSubmit={(values, { setSubmitting }) => {
-              values = { ...values, dateOfBirth: dob };
+              values = { ...values };
               if (
                 values.email == '' ||
                 values.password == '' ||
-                values.name == '' ||
-                values.dateOfBirth == '' ||
-                values.confirmPassword == ''
+                values.fullname == '' ||
+                values.identification == '' ||
+                values.confirmPassword == '' ||
+                values.phone == ''
               ) {
                 handleMessage('Por favor llene todos los campos');
                 setSubmitting(false);
@@ -158,13 +164,23 @@ const Signup = ({ navigation }) => {
             {({ handleChange, handleBlur, handleSubmit, values, isSubmitting }) => (
               <StyledFormArea>
                 <MyTextInput
-                  label="Full Name"
+                  label="Nombre completo"
                   placeholder="Richard Barnes"
                   placeholderTextColor={darkLight}
                   onChangeText={handleChange('name')}
                   onBlur={handleBlur('name')}
                   value={values.name}
                   icon="person"
+                />
+                <MyTextInput
+                  label="Cédula"
+                  placeholder="Ej 206520951"
+                  placeholderTextColor={darkLight}
+                  onChangeText={handleChange('identification')}
+                  onBlur={handleBlur('identification')}
+                  value={values.identification}
+                  keyboardType="number-pad"
+                  icon="md-person-outline"
                 />
                 <MyTextInput
                   label="Email"
@@ -177,16 +193,14 @@ const Signup = ({ navigation }) => {
                   icon="mail"
                 />
                 <MyTextInput
-                  label="Date of Birth"
-                  placeholder="YYYY - MM - DD"
+                  label="Teléfono"
+                  placeholder="Ej. 87888788"
                   placeholderTextColor={darkLight}
-                  onChangeText={handleChange('dateOfBirth')}
-                  onBlur={handleBlur('dateOfBirth')}
-                  value={dob ? dob.toDateString() : ''}
-                  icon="calendar"
-                  editable={false}
-                  isDate={true}
-                  showDatePicker={showDatePicker}
+                  onChangeText={handleChange('phone')}
+                  onBlur={handleBlur('phone')}
+                  value={values.phone}
+                  keyboardType="phone-pad"
+                  icon="device-mobile"
                 />
                 <MyTextInput
                   label="Contraseña"

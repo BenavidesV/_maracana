@@ -55,7 +55,7 @@ const Login = ({ navigation }) => {
 
   const handleLogin = (credentials, setSubmitting) => {
     handleMessage(null);
-    const url = 'https://whispering-headland-00232.herokuapp.com/user/signin';
+    const url = 'https://api-swimming.herokuapp.com/graphql';//https://whispering-headland-00232.herokuapp.com/user/signin
     axios
       .post(url, credentials)
       .then((response) => {
@@ -71,7 +71,7 @@ const Login = ({ navigation }) => {
       })
       .catch((error) => {
         setSubmitting(false);
-        handleMessage('An error occurred. Check your network and try again');
+        handleMessage('Ha ocurrido un error. Verifique la red y vuelva a intentarlo');
         console.log(error.toJSON());
       });
   };
@@ -89,7 +89,7 @@ const Login = ({ navigation }) => {
         setStoredCredentials(credentials);
       })
       .catch((error) => {
-        handleMessage('Persisting login failed');
+        handleMessage('Ha ocurrido un error');
         console.log(error);
       });
   };
@@ -99,9 +99,9 @@ const Login = ({ navigation }) => {
       <StyledContainer>
         <StatusBar style="dark" />
         <InnerContainer>
-          <PageLogo resizeMode="cover" source={require('./../assets/img/expo-bg1.png')} />
+          <PageLogo resizeMode="cover" source={require('./../assets/img/natacioncq.png')} />
           <PageTitle>Maracana</PageTitle>
-          <SubTitle>Account Login</SubTitle>
+          <SubTitle>Inicio de sesión</SubTitle>
 
           <Formik
             initialValues={{ email: '', password: '' }}

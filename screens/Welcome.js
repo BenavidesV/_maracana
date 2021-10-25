@@ -20,7 +20,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 // credentials context
 import { CredentialsContext } from './../components/CredentialsContext';
 
-const Welcome = () => {
+const Welcome = ({ navigation }) => {
   // credentials context
   const { storedCredentials, setStoredCredentials } = useContext(CredentialsContext);
 
@@ -57,6 +57,9 @@ const Welcome = () => {
             <Line />
             <StyledButton onPress={clearLogin}>
               <ButtonText>Logout</ButtonText>
+            </StyledButton>
+            <StyledButton onPress={() => navigation.navigate('Reservation')}>
+              <ButtonText>Reservar</ButtonText>
             </StyledButton>
           </StyledFormArea>
         </WelcomeContainer>

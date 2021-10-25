@@ -12,6 +12,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Login from './../screens/Login';
 import Signup from './../screens/Signup';
 import Welcome from './../screens/Welcome';
+import Reservation from './../screens/Reservation';
 
 const Stack = createStackNavigator();
 
@@ -50,6 +51,7 @@ const RootStack = () => {
                 <Stack.Screen name="Signup" component={Signup} />
               </>
             )}
+            <Stack.Screen name="Reservation" component={Reservation} />
           </Stack.Navigator>
         </NavigationContainer>
       )}
