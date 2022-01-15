@@ -1,0 +1,48 @@
+#EventLog b {
+    color: #388e3c;
+  }
+  
+  hr {
+    margin: 1px 10px 1px 0px;
+    border-top: 1px solid #eee;
+  }
+  
+  .e-schedule .e-schedule-toolbar .e-icon-schedule-print::before {
+    content: '\e973';
+  }
+  
+  .e-schedule .e-schedule-toolbar .e-icon-schedule-pdf::before {
+    content: '\e7c8';
+  }
+  
+  .e-calendar{
+    max-width: 600px;
+  }
+  
+  .custom-field-row {
+    margin-bottom: 20px;
+  }
+  
+  .multi-prop div {
+    padding-left: 0;
+    padding-top: 0;
+  }
+  
+  .header{
+    height: 50px;
+    width: 85%;
+    background: #eee;
+  }
+  
+  .dropSpan{
+    padding-left:150px;
+  }
+  .buttonSpan{
+    padding-left: 150px;
+  }
+  .col-lg-3, .col-lg-9 {
+  padding: 0;
+  }
+  .col-lg-9{
+    padding: 0;
+  }

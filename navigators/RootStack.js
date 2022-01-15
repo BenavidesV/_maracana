@@ -13,6 +13,7 @@ import Login from './../screens/Login';
 import Signup from './../screens/Signup';
 import Welcome from './../screens/Welcome';
 import Reservation from './../screens/Reservation';
+import CreateEvent from './../screens/CreateEvent';
 
 const Stack = createStackNavigator();
 
@@ -52,6 +53,7 @@ const RootStack = () => {
               </>
             )}
             <Stack.Screen name="Reservation" component={Reservation} />
+            <Stack.Screen name="CreateEvent" component={CreateEvent} />
           </Stack.Navigator>
         </NavigationContainer>
       )}

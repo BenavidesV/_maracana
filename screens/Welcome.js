@@ -39,7 +39,7 @@ const Welcome = ({ navigation }) => {
       })
       .catch((error) => console.log(error));
   };
-
+  const creating=true;
   return (
     <>
       <StatusBar style="light" />
@@ -61,7 +61,14 @@ const Welcome = ({ navigation }) => {
             <StyledButton onPress={() => navigation.navigate('Reservation')}>
               <ButtonText>Reservar</ButtonText>
             </StyledButton>
+            {storedCredentials.userRole=="a" && (
+              <StyledButton onPress={() => navigation.navigate('CreateEvent')}>
+                <ButtonText>Crear evento</ButtonText>
+              </StyledButton>
+        )}
+            
           </StyledFormArea>
+          
         </WelcomeContainer>
       </InnerContainer>
     </>

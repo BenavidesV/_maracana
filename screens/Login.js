@@ -3,7 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 
 // formik
 import { Formik } from 'formik';
-
+import { Image, Space } from 'antd-mobile'
 import {
   StyledContainer,
   PageLogo,
@@ -54,28 +54,65 @@ const Login = ({ navigation }) => {
   const {storedCredentials, setStoredCredentials} = useContext(CredentialsContext);
 
   const handleLogin = (credentials, setSubmitting) => {
-    handleMessage(null);
-    const url = 'https://api-swimming.herokuapp.com/graphql';//https://whispering-headland-00232.herokuapp.com/user/signin
-    axios
-      .post(url, credentials)
-      .then((response) => {
-        const result = response.data;
-        const { status, message, data } = result;
-
-        if (status !== 'SUCCESS') {
-          handleMessage(message, status);
-        } else {
-          persistLogin({ ...data[0] }, message, status);
+    let requestBody = {
+      query: `
+        query Login($email: String!, $password: String!) {
+          login(email: $email, password: $password) {
+            userRole
+            userId
+            token
+            tokenExpiration
+          }
         }
-        setSubmitting(false);
+      `,
+      variables: {
+        email: credentials.email,
+        password: credentials.password
+      }
+    };
+    handleMessage(null);
+  
+    const url = 'https://api-swimming.herokuapp.com/graphql';//https://whispering-headland-00232.herokuapp.com/user/signin
+  
+    fetch
+      (url,{
+        method: 'POST',
+        body: JSON.stringify(requestBody),
+        headers: {
+          'Content-Type': 'application/json'
+        }
       })
+      .then((response) => response.json())
+        .then((response) => {
+          if (response.hasOwnProperty('errors')) {
+            let error_message=response.errors[0].message;
+            setSubmitting(false);
+            switch (error_message) {
+              case 'Password is incorrect!':
+                handleMessage('Las credenciales no corresponden con nuestros registros');    
+                break;
+                case 'User does not exist!':
+                  handleMessage('El usuario no aparece en nuestros registros');    
+                  break;
+              default:
+                handleMessage('Houston tenemos un problema');
+                break;
+            }
+          }
+          console.log("response.json: "+response.data.login.userId)
+          persistLogin({ ...response.data.login }, message, response.status);
+        })
+        .catch((errors)=>{
+          
+          
+        })
+        
       .catch((error) => {
         setSubmitting(false);
-        handleMessage('Ha ocurrido un error. Verifique la red y vuelva a intentarlo');
-        console.log(error.toJSON());
-      });
+        console.log("Desde el catch: "+error)
+      })
   };
-
+  
   const handleMessage = (message, type = '') => {
     setMessage(message);
     setMessageType(type);
@@ -99,8 +136,9 @@ const Login = ({ navigation }) => {
       <StyledContainer>
         <StatusBar style="dark" />
         <InnerContainer>
+          <Image src={require('./../assets/img/natacioncq.png')} width={100} height={100} />
           <PageLogo resizeMode="cover" source={require('./../assets/img/natacioncq.png')} />
-          <PageTitle>Maracana</PageTitle>
+          
           <SubTitle>Inicio de sesión</SubTitle>
 
           <Formik
