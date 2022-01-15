@@ -27,6 +27,7 @@
     "expo": "~42.0.1",
     "expo-app-loading": "1.1.2",
     "expo-constants": "~11.0.1",
+    "expo-navigation-bar": "^1.1.1",
     "expo-status-bar": "~1.0.4",
     "formik": "^2.2.9",
     "moment": "^2.29.1",
@@ -48,6 +49,7 @@
     "react-native-screens": "~3.4.0",
     "react-native-simple-month-year-picker": "^1.2.1",
     "react-native-web": "~0.13.12",
+    "react-router-dom": "^6.2.1",
     "styled-components": "^5.3.1"
   },
   "devDependencies": {

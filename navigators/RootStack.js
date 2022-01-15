@@ -14,11 +14,13 @@ import Signup from './../screens/Signup';
 import Welcome from './../screens/Welcome';
 import Reservation from './../screens/Reservation';
 import CreateEvent from './../screens/CreateEvent';
+import TabBar  from './../components/TabBar';
 
 const Stack = createStackNavigator();
 
 // credentials context
 import { CredentialsContext } from './../components/CredentialsContext';
+
 
 const RootStack = () => {
   return (
@@ -54,6 +56,9 @@ const RootStack = () => {
             )}
             <Stack.Screen name="Reservation" component={Reservation} />
             <Stack.Screen name="CreateEvent" component={CreateEvent} />
+            <Stack.Screen name="TabBar" component={TabBar} />
+
+
           </Stack.Navigator>
         </NavigationContainer>
       )}

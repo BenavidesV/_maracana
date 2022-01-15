@@ -1,6 +1,6 @@
 import React, { useContext, useState } from 'react';
 import { StatusBar } from 'expo-status-bar';
-
+import TabBar from '../components/TabBar';
 import {
   Avatar,
   WelcomeImage,
@@ -59,14 +59,14 @@ const Welcome = ({ navigation }) => {
   };
   const [monthlyWeekdayEvents, setMonthlyWeekdayEvents] = useState([]);
   const [ItemList, setItemList] = useState([
-    {
-      label: 'Lunes',
-      value: '1',
-    },
-    {
-      label: 'Martes',
-      value: '2',
-    }
+    // {
+    //   label: 'Lunes',
+    //   value: '1',
+    // },
+    // {
+    //   label: 'Martes',
+    //   value: '2',
+    // }
   ]);
   
   const handleUpdate = (monthlyWeekdayEvents) => {
@@ -237,7 +237,6 @@ const Welcome = ({ navigation }) => {
       <InnerContainer>
         <WelcomeImage resizeMode="cover" source={require('./../assets/img/swimmer.jpg')} />
 
-        <WelcomeContainer>
           <PageTitle welcome={true}>Reservación</PageTitle>
           <SubTitle welcome={true}>{name || 'Usuario'}</SubTitle>
           <SubTitle welcome={true}>{email || 'cuenta@gmail.com'}</SubTitle>
@@ -246,7 +245,6 @@ const Welcome = ({ navigation }) => {
             <Avatar resizeMode="cover" source={AvatarImg} />
 
             <Line />
-            <Image src={require('./../assets/img/natacioncq.png')} width={100} height={100} />
             
             <Card>
               <Input 
@@ -263,7 +261,6 @@ const Welcome = ({ navigation }) => {
                   }
                 }} 
               />  
-              
              </Card>
              <Selector
                 options={ItemList}
@@ -334,14 +331,8 @@ const Welcome = ({ navigation }) => {
                 setValue(v)
               }}
             />
-            <StyledButton onPress={clearLogin}>
-              <ButtonText>Logout</ButtonText>
-            </StyledButton>
-            <StyledButton onPress={() => navigation.navigate('Welcome')}>
-              <ButtonText>Home</ButtonText>
-            </StyledButton>
+
           </StyledFormArea>
-        </WelcomeContainer>
         
 
       </InnerContainer>

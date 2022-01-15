@@ -1,6 +1,7 @@
 import React, { useContext } from 'react';
 import { StatusBar } from 'expo-status-bar';
 
+
 import {
   Avatar,
   WelcomeImage,
@@ -19,6 +20,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // credentials context
 import { CredentialsContext } from './../components/CredentialsContext';
+import TabBar from '../components/TabBar';
+import { SafeArea } from 'antd-mobile';
 
 const Welcome = ({ navigation }) => {
   // credentials context
@@ -28,8 +31,8 @@ const Welcome = ({ navigation }) => {
 
   const AvatarImg = photoUrl
     ? {
-        uri: photoUrl,
-      }
+      uri: photoUrl,
+    }
     : require('./../assets/img/expo-bg1.png');
 
   const clearLogin = () => {
@@ -39,38 +42,11 @@ const Welcome = ({ navigation }) => {
       })
       .catch((error) => console.log(error));
   };
-  const creating=true;
+  const creating = true;
   return (
     <>
       <StatusBar style="light" />
-      <InnerContainer>
-        <WelcomeImage resizeMode="cover" source={require('./../assets/img/expo-bg2.png')} />
-
-        <WelcomeContainer>
-          <PageTitle welcome={true}>Welcome! Buddy</PageTitle>
-          <SubTitle welcome={true}>{name || 'Olga Simpson'}</SubTitle>
-          <SubTitle welcome={true}>{email || 'olgasimp@gmail.com'}</SubTitle>
-
-          <StyledFormArea>
-            <Avatar resizeMode="cover" source={AvatarImg} />
-
-            <Line />
-            <StyledButton onPress={clearLogin}>
-              <ButtonText>Logout</ButtonText>
-            </StyledButton>
-            <StyledButton onPress={() => navigation.navigate('Reservation')}>
-              <ButtonText>Reservar</ButtonText>
-            </StyledButton>
-            {storedCredentials.userRole=="a" && (
-              <StyledButton onPress={() => navigation.navigate('CreateEvent')}>
-                <ButtonText>Crear evento</ButtonText>
-              </StyledButton>
-        )}
-            
-          </StyledFormArea>
-          
-        </WelcomeContainer>
-      </InnerContainer>
+      <TabBar></TabBar>
     </>
   );
 };
