@@ -12,7 +12,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import Login from './../screens/Login';
 import Signup from './../screens/Signup';
 import Welcome from './../screens/Welcome';
-import Reservation from './../screens/Reservation';
+import Reservations from './../screens/Reservation';
 import CreateEvent from './../screens/CreateEvent';
 import TabBar  from './../components/TabBar';
 
@@ -54,7 +54,7 @@ const RootStack = () => {
                 <Stack.Screen name="Signup" component={Signup} />
               </>
             )}
-            <Stack.Screen name="Reservation" component={Reservation} />
+            <Stack.Screen name="Reservation" component={Reservations} />
             <Stack.Screen name="CreateEvent" component={CreateEvent} />
             <Stack.Screen name="TabBar" component={TabBar} />
 

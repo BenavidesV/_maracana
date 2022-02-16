@@ -1,4 +1,3 @@
-import { render } from 'react-dom';
 import '../assets/index.css';
 import * as React from 'react';
 import { ScheduleComponent, ViewsDirective, ViewDirective, Day, Week, WorkWeek, Month, Agenda, Inject, Resize, DragAndDrop } from '@syncfusion/ej2-react-schedule';
@@ -7,10 +6,8 @@ import { ButtonComponent } from '@syncfusion/ej2-react-buttons';
 import { scheduleData } from '../assets/datasource';
 import { DropDownListComponent } from '@syncfusion/ej2-react-dropdowns';
 import { extend } from '@syncfusion/ej2-base';
-import { DatePickerComponent } from '@syncfusion/ej2-react-calendars';
 import { SampleBase } from '../assets/sample-base';
 import { DataManager, Query } from '@syncfusion/ej2-data';
-import { PropertyPane } from '../assets/property-pane';
 /**
  * Schedule Default sample
  */

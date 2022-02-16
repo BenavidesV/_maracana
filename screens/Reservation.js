@@ -1,166 +1,77 @@
-import React, { useContext, useState } from 'react';
-import { StatusBar } from 'expo-status-bar';
-import TabBar from '../components/TabBar';
+import React, { Component, useEffect } from 'react';
+//import ReCAPTCHA from 'react-google-recaptcha';
+import './../assets/Auth.css';
+// credentials context
+import { CredentialsContext } from './../components/CredentialsContext';
+//import { Button, Provider, Toast } from '@ant-design/react-native';
+import { View, Text } from 'react-native';
+import { Picker, Button, Switch, Input, Image, Card, Modal, Space, Selector} from 'antd-mobile'
+import { DatePicker, Provider, NoticeBar, InputItem, List, Toast} from '@ant-design/react-native';
+import moment from 'moment';
+import Swimmer from '../components/Admin/Swimmer';
+import '../components/Admin/AdminEvent.css';
+import Dragula from 'react-dragula';
 import {
-  Avatar,
-  WelcomeImage,
-  PageTitle,
-  SubTitle,
-  StyledFormArea,
-  StyledButton,
-  InnerContainer,
-  WelcomeContainer,
-  ButtonText,
-  Line,
-} from '../components/styles';
+  CloseSquareOutlined
+} from '@ant-design/icons';
 
 // Async storage
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
-// credentials context
-import { CredentialsContext } from '../components/CredentialsContext';
-import moment from 'moment';
-//import {Calendar, CalendarList, Agenda} from 'react-native-calendars';
-import 'bootstrap/dist/css/bootstrap.min.css';
-import { Picker, Button, Switch, Input, Image, Card, Modal, Space, Selector, Toast} from 'antd-mobile'
-
-const basicColumns = [
-  ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N'],
-  ['1', '222', '3'],
-]
-const msInHour = 60 * 60 * 1000;
- 
-  const now = new Date();
- 
-  const providerTimeZone = 'America/New_York';
- 
-/********************* */
-
-
-const Welcome = ({ navigation }) => {
-  // credentials context
-  const { storedCredentials, setStoredCredentials } = useContext(CredentialsContext);
-
-  const { name, email, photoUrl } = storedCredentials;
-
-  const AvatarImg = photoUrl
-    ? {
-        uri: photoUrl,
-      }
-    : require('./../assets/img/expo-bg1.png');
-
-  const clearLogin = () => {
-    AsyncStorage.removeItem('flowerCribCredentials')
-      .then(() => {
-        setStoredCredentials("");
-        navigation.navigate('Login');
-      })
-      .catch((error) => console.log(error));
+function showToast(_message, _type) {
+  if (_type=='info') {
+    Toast.info(_message, 4);  
+  }
+  if (_type=='fail') {
+    Toast.fail(_message, 6);  
+  }
+}
+var dragula = require('react-dragula');
+class Reservation extends Component {
+  state = {
+    date_selected:'',
+    ItemList:[],
+    checked:false,
+    bookings:[],
+    isActive:false
   };
-  const [monthlyWeekdayEvents, setMonthlyWeekdayEvents] = useState([]);
-  const [ItemList, setItemList] = useState([
-    // {
-    //   label: 'Lunes',
-    //   value: '1',
-    // },
-    // {
-    //   label: 'Martes',
-    //   value: '2',
-    // }
-  ]);
   
-  const handleUpdate = (monthlyWeekdayEvents) => {
-    //setMonthlyWeekdayEvents(monthlyWeekdayEvents);
-    setItemList(monthlyWeekdayEvents);
+  static contextType = CredentialsContext;
+  
+  constructor(props) {
+    super(props);
   }
-  const chargeMonthlyEvents=(weekday_selected)=>{
-    var daysInMonth = moment(date_selected).daysInMonth();
-    var dateMonth = moment(date_selected).format('MM');
-    var dateYear = moment(date_selected).year();
-    var dateHour = '00:00';
-    var arrDays = [];
-    while (daysInMonth) {
-      var current = moment().date(daysInMonth);
-      arrDays.push(current);
-      daysInMonth--;
-    }
-    for (const day1 in arrDays) {
+  setRunway(currentUserId, runwaySelected) {
 
-      var currentDate = moment((dateYear + "-" + dateMonth + "-" + (Number(day1) + 1) + "T" + dateHour), 'YYYY-MM-DD HH:mm');
-      console.log(day1 + "**" + currentDate.format('YYYY-MM-DD HH:mm'));
-      var week_number=0;
-      if (currentDate.day() == weekday_selected) {
-        console.log("Hay uno igual " + day1 + "/" + currentDate.format('YYYY-MM-DD HH:mm'));
-        week_number+=1;
-        const requestBody = {
-          query: `
-            query 
-              dateEvents($date: String){
-                dateEvents(date:$date){
-                _id
-                title
-                description
-                date
-                capacity
-                creator {
-                  _id
-                  email
-                }
-                suscribers{
-                  email
-                  fullname
-                  _id
-                }
-              }
-            }
-          `,
-        variables: {
-          date: currentDate
-        }
-            
-        };
-        //if (isLoading) {
-          fetch('https://api-swimming.herokuapp.com/graphql', {
-          method: 'POST',
-          body: JSON.stringify(requestBody),
-          headers: {
-            'Content-Type': 'application/json'
-          }
-        })
-          .then(res => {
-            if (res.status !== 200 && res.status !== 201) {
-              throw new Error('Failed!');
-            }
-            return res.json();
-          })
-          .then(resData => {
-            week_number+=1;
-            const events = resData.data.dateEvents;
-            events.forEach(event => {
-              event['start'] = moment(event.date);
-              event['end'] = moment(event.date).add(1, 'hours');
-              event['label'] = event.description;
-              event['value'] = event._id;
-              event['key']=event._id;
-              //event['value'] = event.runway.toString();
-            });
-            //events.week=week_number;
-            monthlyWeekdayEvents.push(events[0]);
-            handleUpdate(monthlyWeekdayEvents);
-          })
-          .catch(err => {
-            console.log(err);
-          });
-             
+    var currentBookings = [...this.state.bookings];
+    const list = currentBookings.map((element, i) => {
+
+      if (element.user._id === currentUserId) {
+        element.runway = runwaySelected;
+        element.attendance = true;
+        if (runwaySelected === 0) element.attendance = false;
       }
-      
-    }
-    setIsLoading(false);
-    
-    //setItemList(monthlyWeekdayEvents);
-    //console.log("MonthlyWeekdayEvents: "+JSON.stringify(monthlyWeekdayEvents));
+    });
+
+    console.log("desde setRunway: " + JSON.stringify(this.state.bookings));
   }
-  const chargeEvents = (date_selected_c) => {
+  componentWillUnmount() {
+    this.isActive = false;
+    var drake = dragula(Array.from(document.getElementsByClassName('cont-dragula')));
+    drake.destroy();
+  }
+  componentDidUpdate() {
+    var drake = dragula(Array.from(document.getElementsByClassName('cont-dragula')),
+      {
+        direction: 'horizontal'
+      }
+    );
+    drake.on('drop', (el, target) => {
+      this.setRunway(el.id, Number.parseInt(target.id, 10));
+    });
+
+  }
+  
+  chargeEvents = (date_selected_c) => {
     const requestBody = {
       query: `
         query 
@@ -188,7 +99,6 @@ const Welcome = ({ navigation }) => {
     }
         
     };
-    //if (isLoading) {
       fetch('https://api-swimming.herokuapp.com/graphql', {
       method: 'POST',
       body: JSON.stringify(requestBody),
@@ -210,134 +120,419 @@ const Welcome = ({ navigation }) => {
           event['label'] = event.description;
           event['value'] = event._id;
           event['key']=event._id;
-          //event['value'] = event.runway.toString();
         });
-        setIsLoading(false);
-        setItemList(events);
+        this.setState({ItemList:events})
+        if (events.length==0)showToast("No hay eventos para la fecha seleccionada",'info');
+        
+        
       })
       .catch(err => {
         console.log(err);
       });  
-    //}
         
   };
-  const handleCheched=(checked_) => {
-    setChecked(checked_)
-    console.log("Funcion fuera del componente: "+checked_+">>>"+checked)
+  handleChecked=(_checked) => {
+    this.setState({checked:_checked})
+    console.log("Funcion fuera del componente: "+">>>"+this.state.checked)
+  };
+  bookEventHandler = (event_id) => {
+
+    if (!this.context.storedCredentials.token) {
+      return;
+    }
+    if (this.state.checked) {
+
+      const requestBodyEvents = {
+        query: `
+            query {
+              events {
+                _id
+                title
+                description
+                date
+                capacity
+                creator {
+                  _id
+                  email
+                }
+                suscribers{
+                  email
+                  fullname
+                  _id
+                }
+              }
+            }
+          `,
+        variables: {
+          selectedEventDate: this.state.date_selected
+        }
+      };
+      fetch('https://api-swimming.herokuapp.com/graphql', {
+        method: 'POST',
+        body: JSON.stringify(requestBodyEvents),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+        .then(res => {
+          if (res.status !== 200 && res.status !== 201) {
+            throw new Error('Failed!');
+          }
+          return res.json();
+        })
+        .then(resData => {
+          const reiterativeEvents = resData.data.events;
+          reiterativeEvents.forEach(event => {
+            event['start'] = moment(event.date);
+            event['end'] = moment(event.date).add(1, 'hours');
+            event['value'] = event.description;
+            console.log(moment(event.date) >= moment(event_id.date) +
+              "day(): " + moment(event.date).day() === moment(event_id.date).day() +
+              "month: " + moment(event.date).month() === moment(event_id.date).month() +
+              "hour: " + moment(event.date).hour() === moment(event_id.date).hour() +
+              "year: " + (moment(event.date).year() === moment(event_id.date).year()));
+            if (moment(event.date) >= moment(event_id.date) &&
+              (moment(event.date).day() === moment(event_id.date).day()) &&
+              (moment(event.date).month() === moment(event_id.date).month()) &&
+              (moment(event.date).hour() === moment(event_id.date).hour()) &&
+              (moment(event.date).year() === moment(event_id.date).year())) {
+
+              const requestB = {
+                query: `
+                      mutation BookEvent($id: ID!) {
+                        bookEvent(eventId: $id) {
+                          _id
+                          user {
+                            _id
+                            email
+                            fullname
+                          }
+                        }
+                      }
+                    `,
+                variables: {
+                  id: event._id
+                }
+              };
+
+              fetch('https://api-swimming.herokuapp.com/graphql', {
+                method: 'POST',
+                body: JSON.stringify(requestB),
+                headers: {
+                  'Content-Type': 'application/json',
+                  Authorization: 'Bearer ' + this.context.storedCredentials.token
+                }
+              })
+                .then(res => {
+                  if (res.status !== 200 && res.status !== 201) {
+                    throw new Error('Failed!');
+                  }
+                  return res.json();
+                })
+                .then(resData => {
+                  var newBooking = {
+                    _id: resData.data.bookEvent.user._id,
+                    email: resData.data.bookEvent.user.email,
+                    fullname: resData.data.bookEvent.user.fullname
+                  };
+                  if (!event.suscribers.filter(function (e) { return e._id === newBooking._id; }).length > 0) {
+                    event.suscribers.push(
+                      newBooking
+                    )
+                  }
+                })
+                .catch(err => {
+                  console.log(err);
+                });
+
+            }
+          });
+      
+        })
+        .catch(err => {
+          console.log(err);
+        });
+
+
+    } else {
+      const stateEvents = this.state.ItemList;
+      const requestBody = {
+        query: `
+            mutation BookEvent($id: ID!) {
+              bookEvent(eventId: $id) {
+                _id
+                user{
+                  _id
+                  email
+                  fullname
+                }
+                event{
+                  _id
+                }
+              }
+            }
+          `,
+        variables: {
+          id: event_id._id
+        }
+      };
+
+      fetch('https://api-swimming.herokuapp.com/graphql', {
+        method: 'POST',
+        body: JSON.stringify(requestBody),
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: 'Bearer ' + this.context.storedCredentials.token
+        }
+      })
+        .then(res => {
+          if (res.status !== 200 && res.status !== 201) {
+            showToast("Usted ya estaba registrado",'fail');
+            throw new Error('Failed!');
+
+          }
+          return res.json();
+        })
+        .then(resData => {
+
+          stateEvents.forEach(element => {
+            var newBooking = {
+              _id: resData.data.bookEvent.user._id,
+              email: resData.data.bookEvent.user.email,
+              fullname: resData.data.bookEvent.user.fullname
+            };
+            if (!element.suscribers.filter(function (e) { return e._id === newBooking._id; }).length > 0) {
+              element.suscribers.push(
+                newBooking
+              )
+            }
+          });
+
+          this.setState({ ItemList: stateEvents });
+          showToast("Su solicitud está siendo procesada",'info');
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    }
+
+  };
+  sortRunways() {
+    const sBookings = this.state.bookings;
+    console.log("desde sort antes de ordenar: " + JSON.stringify(sBookings));
+    var r = [];
+    for (let index = 1; index <= 6; index++) {
+        r.push(
+            <div className="row" key={r + index}>
+                
+                <div id={index} className={'cont-dragula row col-11 row-'+index} ref={this.dragulaDecorator}>
+                  <div className="col-1 runway-class">{index}</div>
+                    {sBookings.map(booking => {
+                        if (booking.runway === index) {
+                            return (<Swimmer key={booking.user._id} id={booking.user._id}
+                                individualBooking={booking}
+                            ></Swimmer>);
+                        }
+                        return null;
+                    })}
+                    
+                </div>
+            </div>
+        );
+
+    }
+    return r;
+  };
+  getBookings(eventId) {
+    this.setState({isActive:false});
+    const requestBody = {
+      query: `
+          mutation EventBookings($eventId: ID!) {
+            eventBookings(eventId: $eventId) {
+            _id
+            attendance
+            runway
+            user{
+              _id
+              fullname
+            }
+            }
+          }
+        `,
+      variables: {
+        eventId: eventId
+      }
+    };
+
+
+    fetch('https://api-swimming.herokuapp.com/graphql', {
+      method: 'POST',
+      body: JSON.stringify(requestBody),
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: 'Bearer ' + this.context.storedCredentials.token
+      }
+    })
+      .then(res => {
+        if (res.status !== 200 && res.status !== 201) {
+          throw new Error('Failed!');
+        }
+        return res.json();
+      })
+      .then(resData => {
+        this.setState({ bookings: resData.data.eventBookings, isActive:true});
+        console.log("data bookings: "+JSON.stringify(this.state.bookings));
+      })
+      .catch(err => {
+        console.log(err);
+      });
   }
 
-  const [visible, setVisible] = useState(false)
-  const [value, setValue] = useState('')
-  const [checked, setChecked] = useState(false)
-  const [isLoading, setIsLoading] = useState(true)
-  const [date_selected, setDate_selected] = useState('');
-  return (
-    <>
-      <StatusBar style="light" />
-      <InnerContainer>
-        <WelcomeImage resizeMode="cover" source={require('./../assets/img/swimmer.jpg')} />
+ 
 
-          <PageTitle welcome={true}>Reservación</PageTitle>
-          <SubTitle welcome={true}>{name || 'Usuario'}</SubTitle>
-          <SubTitle welcome={true}>{email || 'cuenta@gmail.com'}</SubTitle>
-
-          <StyledFormArea>
-            <Avatar resizeMode="cover" source={AvatarImg} />
-
-            <Line />
-            
-            <Card>
+  render() {
+    return (
+      <Provider>
+        <View>
+        <h3 style={{display: 'flex',  justifyContent:'center', alignItems:'center', marginTop:'2rem'}}>Reservar</h3>
+        <Card>
               <Input 
                 placeholder='Fecha' 
                 //value={date_selected} 
                 clearable 
                 type='date'
+                format={'DD-MM-YYYY'}
                 onChange={v => {
                   if (v.length) {
                     console.log("!checked: "+v)
-                    setIsLoading(true)
-                    setDate_selected(v)
-                    chargeEvents(v)
+                    this.setState({date_selected: v})
+                    this.chargeEvents(v)
                   }
                 }} 
               />  
              </Card>
-             <Selector
-                options={ItemList}
+        <Selector
+                options={this.state.ItemList}
                 value={['_id']}
                 onChange={(item) => {
-                  ItemList.forEach(element => {
+                  this.setState({isActive:true});
+                  this.state.ItemList.forEach(element => {
                     if (element._id==item) {
-                      Modal.confirm({
-                        content:<Card>
-                          
-                          <Switch
-                            checkedText="Recurrente"
-                            uncheckedText="No recurrente"
-                            checked={checked}
-                            onClick={handleCheched(checked)} 
-                            // onChange={ checked => {
-                            //   console.log("checked: "+checked)
-                            //   setChecked(checked)
-                            //   console.log("checked2: "+JSON.stringify({checked}))
-                            //   reload();
-                            // }}
-                          />
-                          <Space direction='vertical'>
-                          <p>{element.description + "  " +
-                            moment(element.date).format("DD/MM/YYYY hh:mm A")}</p>
-                          <p>Cupos disponibles: {element.capacity - element.suscribers.length} personas</p>
-                          {element.suscribers &&
-                              element.suscribers.length > 0 && (
-                                  <div className="">
-                                      <h6 className="text-center">Inscritos ({element.suscribers.length})</h6>
-                                  </div>
-                              )}
-                      </Space>
-                        </Card>
-                        ,
-                        showCloseButton:true,
-                        confirmText: "Reservar",
-                        cancelText: "Cancelar",
-                        onConfirm: () => {
-                          console.log('Confirmed>>'+element.capacity)
-                        },
-                    })    
+                      
+                      this.getBookings(element._id);
+                      if (this.state.isActive && this.context.storedCredentials.userRole=='u') {
+                        Modal.confirm({
+                          content:<Card>
+                            
+                            <Switch
+                              checkedText="Recurrente"
+                              uncheckedText="No recurrente"
+                              onChange={(value)=>
+                                this.handleChecked(value)
+                              } 
+                            />
+                            <Space direction='vertical'>
+                            <p>{element.description + "  " +
+                              moment(element.date).format("DD/MM/YYYY hh:mm A")}</p>
+                            <p>Cupos disponibles: {element.capacity - element.suscribers.length} personas</p>
+                            {element.suscribers &&
+                                element.suscribers.length > 0 && (
+                                    <div className="">
+                                        <h6 className="text-center">Inscritos ({element.suscribers.length})</h6>
+                                
+                                        {element.suscribers.map((suscriber) => {     
+                                          if (suscriber._id==this.context.storedCredentials.userId) {
+                                            return (<h6 key={suscriber._id}>{suscriber.fullname}</h6>)  
+                                          }      
+                                        })}
+                                    </div>
+                                )}
+                        </Space>
+                          </Card>
+                          ,
+                          showCloseButton:true,
+                          confirmText: "Reservar",
+                          cancelText: "Volver",
+                          onConfirm: () => {
+                            if (element.capacity - element.suscribers.length<=0) {
+                              showToast("No hay espacios disponibles",'fail');
+                              
+                            }else{
+                              this.bookEventHandler(element);
+                            }
+                          },
+                      })  
+                      }
+                      if (this.state.isActive && this.context.storedCredentials.userRole=='a') {
+                        Modal.confirm({
+                          content:<Card>
+                            <p>{element.description + "  " +
+                              moment(element.date).format("DD/MM/YYYY hh:mm A")}</p>
+                            <p>Cupos disponibles: {element.capacity - element.suscribers.length} personas</p>
+                            <div
+                                            className="container-fluid justify-content-center cont-dragula"
+                                            id='0'
+                                            ref={this.dragulaDecorator}
+                            ><p>Descartar nadador</p>
+                            <CloseSquareOutlined />
+                            </div>
+                            {element.suscribers && this.state.isActive &&
+                                element.suscribers.length > 0 && (
+                                    
+                                    <div className="">
+                                        <h6 className="text-center">Inscritos ({element.suscribers.length})</h6>
+                                        <div
+                                            className="container-fluid justify-content-center cont-dragula"
+                                            id='0'
+                                            ref={this.dragulaDecorator}
+                                        >
+                                            En espera: 
+                                            {this.state.bookings.map(item => {
+
+                                                if (item.runway === 0) {
+                                                    return (<Swimmer key={item.user._id} id={item.user._id}
+                                                        individualBooking={item}
+                                                    ></Swimmer>);
+                                                }
+                                                return
+                                            }
+
+                                            )}
+                                        </div>
+                                        <div id="right1" className="container-fluid justify-content-center">
+                                            <h6 className="text-center">Asistentes</h6>
+                                            {this.state.isActive && this.sortRunways()}
+
+                                        </div>
+                                    </div>
+                                )}
+                          </Card>
+                          ,
+                          showCloseButton:true,
+                          confirmText: "Guardar",
+                          cancelText: "Volver",
+                          onConfirm: () => {
+                            if (element.capacity - element.suscribers.length<=0) {
+                              showToast("No hay espacios disponibles",'fail');
+                              
+                            }else{
+                              this.bookEventHandler(element);
+                            }
+                          },
+                      })
+                      }
+                                                                      
                     }
                   });
                   
 
               }}
               />
-             
-             
-            <Button
-              color='primary' 
-              fill='solid'
-              //onClick={chargeMonthlyEvents(value)}
-            >
-              Cargar//Reservar
-            </Button>
-            <Picker
-              columns={basicColumns}
-              visible={visible}
-              confirmText="Confirmar"
-              cancelText="Cancelar"
-              onClose={() => {
-                setVisible(false)
-              }}
-              value={value}
-              onConfirm={v => {
-                setValue(v)
-              }}
-            />
+          
+        </View>
+      </Provider>
+    )
+  }
+}
 
-          </StyledFormArea>
-        
-
-      </InnerContainer>
-    </>
-  );
-};
-
-export default Welcome;
+export default Reservation;
